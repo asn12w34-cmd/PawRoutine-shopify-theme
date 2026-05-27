@@ -1,0 +1,24 @@
+{% doc %}
+  PawRoutine custom header actions.
+  Keeps search/account/cart behavior close to the native theme while allowing the custom header to place and style the icons independently.
+
+  @param {object} section
+  @param {string} customer_account_menu
+  @param {boolean} show_search
+{% enddoc %}
+
+<div class="pr-header-actions" aria-label="Header actions">
+  {% if show_search %}
+    <div class="pr-header-actions__item pr-header-actions__item--search">
+      {% render 'search', style: 'default', class: 'pr-header-search', display_style: 'icon' %}
+    </div>
+  {% endif %}
+
+  <div class="pr-header-actions__item pr-header-actions__item--account-cart">
+    {% render 'header-actions',
+      section: section,
+      customer_account_menu: customer_account_menu,
+      display_style: 'icon'
+    %}
+  </div>
+</div>

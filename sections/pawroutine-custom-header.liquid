@@ -1,0 +1,224 @@
+{{ 'pawroutine-custom-header.css' | asset_url | stylesheet_tag }}
+
+<script
+  src="{{ 'pawroutine-custom-header.js' | asset_url }}"
+  type="module"
+  defer
+></script>
+
+{% liquid
+  assign header_menu = section.settings.menu
+  assign logo_image = section.settings.logo
+  assign logo_text = section.settings.logo_text | default: shop.name
+  assign announcement_text = section.settings.announcement_text
+  assign announcement_link = section.settings.announcement_link
+  assign customer_account_menu = section.settings.customer_account_menu
+%}
+
+<header-component
+  id="header-component"
+  class="pawroutine-header header-section color-{{ section.settings.color_scheme }}{% if section.settings.sticky_header %} pawroutine-header--sticky{% endif %}"
+  data-pr-header
+  data-section-id="{{ section.id }}"
+>
+  {% if section.settings.show_announcement and announcement_text != blank %}
+    <div class="pawroutine-header__announcement" role="region" aria-label="Store announcement">
+      {% if announcement_link != blank %}
+        <a class="pawroutine-header__announcement-link" href="{{ announcement_link }}">
+          <span>{{ announcement_text }}</span>
+        </a>
+      {% else %}
+        <span>{{ announcement_text }}</span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="pawroutine-header__main header__row--top">
+    <div class="pawroutine-header__actions pawroutine-header__area pawroutine-header__area--actions">
+      {% render 'pawroutine-header-actions',
+        section: section,
+        customer_account_menu: customer_account_menu,
+        show_search: section.settings.show_search
+      %}
+    </div>
+
+    <div class="pawroutine-header__brand pawroutine-header__area pawroutine-header__area--brand">
+      <a class="pawroutine-header__brand-link" href="{{ routes.root_url }}" aria-label="{{ shop.name }} home">
+        {% if logo_image != blank %}
+          {{ logo_image
+            | image_url: width: 420
+            | image_tag:
+              class: 'pawroutine-header__logo-image',
+              widths: '120, 180, 240, 320, 420',
+              sizes: '(min-width: 990px) 220px, 150px',
+              loading: 'eager',
+              fetchpriority: 'high',
+              alt: shop.name
+          }}
+        {% else %}
+          <span class="pawroutine-header__logo-text">{{ logo_text }}</span>
+        {% endif %}
+      </a>
+    </div>
+
+    <nav class="pawroutine-header__nav pawroutine-header__area pawroutine-header__area--nav" aria-label="Main navigation">
+      {% if header_menu != blank and header_menu.links.size > 0 %}
+        <ul class="pawroutine-header__nav-list" role="list">
+          {% for link in header_menu.links %}
+            <li class="pawroutine-header__nav-item">
+              <a
+                class="pawroutine-header__nav-link{% if link.current %} pawroutine-header__nav-link--active{% endif %}"
+                href="{{ link.url }}"
+                {% if link.current %}aria-current="page"{% endif %}
+              >
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </nav>
+
+    <div class="pawroutine-header__mobile-toggle-wrap pawroutine-header__area pawroutine-header__area--mobile-toggle">
+      <button
+        type="button"
+        class="pawroutine-header__mobile-toggle"
+        aria-label="Open menu"
+        aria-controls="PawRoutineMobileMenu-{{ section.id }}"
+        aria-expanded="false"
+        data-pr-menu-toggle
+      >
+        <span class="pawroutine-header__mobile-toggle-icon pawroutine-header__mobile-toggle-icon--open" aria-hidden="true">
+          {{ 'icon-menu.svg' | inline_asset_content }}
+        </span>
+        <span class="pawroutine-header__mobile-toggle-icon pawroutine-header__mobile-toggle-icon--close" aria-hidden="true">
+          {{ 'icon-close.svg' | inline_asset_content }}
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="PawRoutineMobileMenu-{{ section.id }}"
+    class="pawroutine-mobile-menu"
+    data-pr-mobile-menu
+    hidden
+  >
+    <div class="pawroutine-mobile-menu__overlay" data-pr-menu-close></div>
+
+    <div class="pawroutine-mobile-menu__panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+      <div class="pawroutine-mobile-menu__head">
+        <span class="pawroutine-mobile-menu__title">Menu</span>
+        <button
+          type="button"
+          class="pawroutine-mobile-menu__close"
+          aria-label="Close menu"
+          data-pr-menu-close
+        >
+          {{ 'icon-close.svg' | inline_asset_content }}
+        </button>
+      </div>
+
+      {% if header_menu != blank and header_menu.links.size > 0 %}
+        <nav class="pawroutine-mobile-menu__nav" aria-label="Mobile main navigation">
+          <ul class="pawroutine-mobile-menu__list" role="list">
+            {% for link in header_menu.links %}
+              <li class="pawroutine-mobile-menu__item">
+                <a
+                  class="pawroutine-mobile-menu__link{% if link.current %} pawroutine-mobile-menu__link--active{% endif %}"
+                  href="{{ link.url }}"
+                  {% if link.current %}aria-current="page"{% endif %}
+                >
+                  {{ link.title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
+
+      {% if section.settings.mobile_note != blank %}
+        <p class="pawroutine-mobile-menu__note">{{ section.settings.mobile_note }}</p>
+      {% endif %}
+    </div>
+  </div>
+</header-component>
+
+{% schema %}
+{
+  "name": "PawRoutine custom header",
+  "tag": "section",
+  "class": "shopify-section-pawroutine-header",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Show announcement bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Announcement text",
+      "default": "FREE SHIPPING OVER £35 + SIMPLE DAILY PET CARE"
+    },
+    {
+      "type": "url",
+      "id": "announcement_link",
+      "label": "Announcement link"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text fallback",
+      "default": "PawRoutine Co"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "link_list",
+      "id": "customer_account_menu",
+      "label": "Customer account menu",
+      "default": "customer-account-main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "mobile_note",
+      "label": "Mobile drawer note",
+      "default": "Daily pet care essentials for simple, healthier routines."
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Sticky header",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "PawRoutine custom header"
+    }
+  ]
+}
+{% endschema %}
