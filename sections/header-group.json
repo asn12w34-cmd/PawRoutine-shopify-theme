@@ -11,10 +11,52 @@
   "type": "header",
   "name": "Header",
   "sections": {
+    "pawroutine_announcement_marquee": {
+      "type": "pawroutine-announcement-marquee",
+      "blocks": {
+        "message_1": {
+          "type": "announcement",
+          "settings": {
+            "text": "FREE SHIPPING OVER £35",
+            "link": ""
+          }
+        },
+        "message_2": {
+          "type": "announcement",
+          "settings": {
+            "text": "SIMPLE DAILY PET CARE",
+            "link": ""
+          }
+        },
+        "message_3": {
+          "type": "announcement",
+          "settings": {
+            "text": "GENTLE ROUTINES FOR HAPPY PETS",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "message_1",
+        "message_2",
+        "message_3"
+      ],
+      "settings": {
+        "enabled": true,
+        "accessibility_label": "Store announcements",
+        "scroll_speed": 26,
+        "gap": 48,
+        "text_size": 12,
+        "letter_spacing": 12,
+        "background_color": "#6A284F",
+        "text_color": "#FFFFFF",
+        "vertical_padding": 9
+      }
+    },
     "pawroutine_custom_header": {
       "type": "pawroutine-custom-header",
       "settings": {
-        "show_announcement": true,
+        "show_announcement": false,
         "announcement_text": "FREE SHIPPING OVER £35 + SIMPLE DAILY PET CARE",
         "announcement_link": "",
         "logo": "",
@@ -29,6 +71,7 @@
     }
   },
   "order": [
+    "pawroutine_announcement_marquee",
     "pawroutine_custom_header"
   ]
 }
