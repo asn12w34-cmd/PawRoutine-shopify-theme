@@ -2,64 +2,22 @@
  * ------------------------------------------------------------
  * IMPORTANT: The contents of this file are auto-generated.
  *
- * This version was adjusted for practice to load the isolated
- * PawRoutine custom header instead of the native header section.
- * You can still add/remove this section from the Shopify theme editor.
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
 {
   "type": "header",
   "name": "Header",
   "sections": {
-    "pawroutine_announcement_marquee": {
-      "type": "pawroutine-announcement-marquee",
-      "blocks": {
-        "message_1": {
-          "type": "announcement",
-          "settings": {
-            "text": "FREE SHIPPING OVER £35",
-            "link": ""
-          }
-        },
-        "message_2": {
-          "type": "announcement",
-          "settings": {
-            "text": "SIMPLE DAILY PET CARE",
-            "link": ""
-          }
-        },
-        "message_3": {
-          "type": "announcement",
-          "settings": {
-            "text": "GENTLE ROUTINES FOR HAPPY PETS",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "message_1",
-        "message_2",
-        "message_3"
-      ],
-      "settings": {
-        "enabled": true,
-        "accessibility_label": "Store announcements",
-        "scroll_speed": 26,
-        "gap": 48,
-        "text_size": 12,
-        "letter_spacing": 12,
-        "background_color": "#6A284F",
-        "text_color": "#FFFFFF",
-        "vertical_padding": 9
-      }
-    },
     "pawroutine_custom_header": {
       "type": "pawroutine-custom-header",
       "settings": {
         "show_announcement": false,
         "announcement_text": "FREE SHIPPING OVER £35 + SIMPLE DAILY PET CARE",
         "announcement_link": "",
-        "logo": "",
+        "logo": "shopify://shop_images/PawRoutine_Logo.png",
         "logo_text": "PawRoutine Co",
         "menu": "main-menu",
         "customer_account_menu": "customer-account-main-menu",
@@ -68,10 +26,37 @@
         "sticky_header": false,
         "color_scheme": "scheme-1"
       }
+    },
+    "pawroutine_announcement_marquee_phH3EW": {
+      "type": "pawroutine-announcement-marquee",
+      "blocks": {
+        "announcement_kW9cDA": {
+          "type": "announcement",
+          "settings": {
+            "text": "FREE SHIPPING OVER £35+",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_kW9cDA"
+      ],
+      "name": "PawRoutine marquee",
+      "settings": {
+        "enabled": true,
+        "accessibility_label": "Store announcements",
+        "scroll_speed": 36,
+        "gap": 48,
+        "text_size": 18,
+        "letter_spacing": 12,
+        "background_color": "#ffffff",
+        "text_color": "#000000",
+        "vertical_padding": 9
+      }
     }
   },
   "order": [
-    "pawroutine_announcement_marquee",
-    "pawroutine_custom_header"
+    "pawroutine_custom_header",
+    "pawroutine_announcement_marquee_phH3EW"
   ]
 }

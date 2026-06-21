@@ -99,6 +99,38 @@ Verification checklist:
 Notes:
 - Treat these files as one feature. Do not document the CSS, JS, Liquid section, and action snippet as separate changes unless they later become independent features.
 
+### Status update — PawRoutine custom header sticky behavior
+Status: Applied locally -- verification pending
+Date: 20-06-2026
+
+Related change:
+- PawRoutine custom header
+
+Files changed:
+- `sections/pawroutine-custom-header.liquid`
+- `assets/pawroutine-custom-header.css`
+
+Change:
+- Reworked the custom header's sticky behavior to follow Horizon's native sticky-header pattern.
+- The outer custom-header section is used as the sticky container.
+- The inner `<header-component>` conditionally receives `sticky="always"` when the existing `sticky_header` setting is enabled.
+- Removed the previous custom sticky approach that applied `position: sticky` directly to the inner header component.
+- Kept the announcement marquee as a separate, non-sticky section; it scrolls away while the main header remains pinned.
+
+Reason:
+- The previous implementation attempted to make the inner component sticky. Its surrounding section still scrolled with the page, so the header did not remain pinned reliably.
+- Aligning the markup and CSS with Horizon's sticky-header structure is more maintainable and less likely to conflict with theme behavior during future updates.
+
+Verification required:
+- Run `shopify theme dev` and test the local preview.
+- With the Sticky header setting enabled, scroll past the hero and confirm that the logo, navigation, and header actions remain pinned at the top.
+- Confirm the announcement marquee scrolls away normally.
+- Recheck desktop and mobile navigation, including opening and closing the mobile drawer.
+- After successful local testing and deployment, update this status to `Applied` and note the deployment date.
+
+Notes:
+- Do not remove the existing `sticky_header` checkbox setting from the section schema; it remains the merchant-facing control for this behavior.
+- Treat this as an update to the existing custom-header feature, not as a separate feature.
 ---
 
 ### PawRoutine announcement marquee
@@ -163,12 +195,4 @@ Add future status updates below. Do not delete the original entries above.
 
 ---
 
-### Status update
-Status: N/A
-Date: N/A
 
-Reason:
-- No later status updates yet.
-
-Notes:
-- Add updates here if one of the logged changes is adjusted, removed, or replaced.

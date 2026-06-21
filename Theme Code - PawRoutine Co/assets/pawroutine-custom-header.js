@@ -1,3 +1,7 @@
+/*
+CUSTOM FILE [PR-001] — PawRoutine mobile-header behavior | See docs/CUSTOM_CHANGES.md#PR-001
+*/
+
 class PawRoutineHeader {
   constructor(header) {
     this.header = header;

@@ -1,3 +1,7 @@
+{% comment %}
+CUSTOM FILE [PR-001] — PawRoutine custom header section | See docs/CUSTOM_CHANGES.md#PR-001
+{% endcomment %}
+
 {{ 'pawroutine-custom-header.css' | asset_url | stylesheet_tag }}
 
 <script
@@ -13,13 +17,18 @@
   assign announcement_text = section.settings.announcement_text
   assign announcement_link = section.settings.announcement_link
   assign customer_account_menu = section.settings.customer_account_menu
+  assign is_sticky = section.settings.sticky_header
 %}
 
 <header-component
   id="header-component"
-  class="pawroutine-header header-section color-{{ section.settings.color_scheme }}{% if section.settings.sticky_header %} pawroutine-header--sticky{% endif %}"
+  class="pawroutine-header color-{{ section.settings.color_scheme }}"
   data-pr-header
   data-section-id="{{ section.id }}"
+  {% if is_sticky %}
+    sticky="always"
+  {% endif %}
+>
 >
   {% if section.settings.show_announcement and announcement_text != blank %}
     <div class="pawroutine-header__announcement" role="region" aria-label="Store announcement">
