@@ -23,7 +23,7 @@
         "customer_account_menu": "customer-account-main-menu",
         "show_search": true,
         "mobile_note": "Daily pet care essentials for simple, healthier routines.",
-        "sticky_header": false,
+        "sticky_header": true,
         "color_scheme": "scheme-1"
       }
     },
