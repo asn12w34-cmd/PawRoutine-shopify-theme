@@ -99,41 +99,60 @@ Verification checklist:
 Notes:
 - Treat these files as one feature. Do not document the CSS, JS, Liquid section, and action snippet as separate changes unless they later become independent features.
 
-### Status update — PawRoutine custom header sticky behavior
-Status: Applied locally -- verification pending
-Date: 20-06-2026
+### Status update — Native theme header restored (3)
+
+Status: Applied
+Date: 22-06-2026
 
 Related change:
-- PawRoutine custom header
+
+* PawRoutine custom header
 
 Files changed:
-- `sections/pawroutine-custom-header.liquid`
-- `assets/pawroutine-custom-header.css`
+
+* `sections/header.liquid`
+* `sections/header-group.json` — updated by Shopify Theme Editor after the header was changed
 
 Change:
-- Reworked the custom header's sticky behavior to follow Horizon's native sticky-header pattern.
-- The outer custom-header section is used as the sticky container.
-- The inner `<header-component>` conditionally receives `sticky="always"` when the existing `sticky_header` setting is enabled.
-- Removed the previous custom sticky approach that applied `position: sticky` directly to the inner header component.
-- Kept the announcement marquee as a separate, non-sticky section; it scrolls away while the main header remains pinned.
+
+* Restored the theme’s native `header.liquid` as the active Header-group section.
+* Updated the native header section schema so it can be added from the Shopify Theme Editor within the Header group:
+
+  * added `enabled_on` for the `header` section group;
+  * added a `Header` preset.
+* Used the Shopify Theme Editor to remove `PawRoutine custom header` and add the native `Header` section instead.
+* The PawRoutine announcement marquee remains a separate section beneath the active native header.
 
 Reason:
-- The previous implementation attempted to make the inner component sticky. Its surrounding section still scrolled with the page, so the header did not remain pinned reliably.
-- Aligning the markup and CSS with Horizon's sticky-header structure is more maintainable and less likely to conflict with theme behavior during future updates.
 
-Verification required:
-- Run `shopify theme dev` and test the local preview.
-- With the Sticky header setting enabled, scroll past the hero and confirm that the logo, navigation, and header actions remain pinned at the top.
-- Confirm the announcement marquee scrolls away normally.
-- Recheck desktop and mobile navigation, including opening and closing the mobile drawer.
-- After successful local testing and deployment, update this status to `Applied` and note the deployment date.
+* The custom PawRoutine header was no longer required for the current practice theme direction.
+* Returning to the native theme header restores the theme’s standard header behavior, controls, and compatibility with future theme updates.
+* Making the native header available through the Theme Editor avoids relying on manual edits to the auto-generated `header-group.json` configuration file.
 
-Notes:
-- Do not remove the existing `sticky_header` checkbox setting from the section schema; it remains the merchant-facing control for this behavior.
-- Treat this as an update to the existing custom-header feature, not as a separate feature.
----
+Important implementation note:
 
-### PawRoutine announcement marquee
+* `sections/header-group.json` is generated and maintained by Shopify when Header-group sections are added, removed, reordered, or configured in the Theme Editor.
+* Do not treat `header-group.json` as the primary source for this change. The durable code change is in `sections/header.liquid`, where the native header was made eligible for the Header group.
+* After future Header changes in Shopify Admin, pull/sync the latest `header-group.json` before pushing local theme changes, otherwise an older local copy could overwrite the Theme Editor configuration.
+
+Custom-header file status:
+
+* The following PawRoutine custom-header files are retained for now but are inactive because the custom section is no longer present in the active Header group:
+
+  * `sections/pawroutine-custom-header.liquid`
+  * `assets/pawroutine-custom-header.css`
+  * `assets/pawroutine-custom-header.js`
+  * `snippets/pawroutine-header-actions.liquid`
+* Delete these only in a separate cleanup commit after confirming they are not referenced elsewhere and you do not want to preserve the experiment for comparison.
+
+Verification:
+
+* Confirm the native Header appears in the Theme Editor under the Header group.
+* Confirm logo, desktop navigation, search, account, cart, mobile drawer, and sticky-header behavior work correctly.
+* Confirm the PawRoutine marquee still appears below the header and scrolls away independently.
+* Confirm no duplicate header, duplicate navigation, or duplicate header-action elements render.
+
+### PawRoutine announcement marquee (2)
 Status: Applied
 Last updated: 19-06-2026
 
@@ -187,6 +206,39 @@ Verification checklist:
 Notes:
 - Keep this entry separate from the custom header entry because the marquee can be adjusted or removed without changing the core header structure.
 
+### Status update — PawRoutine custom header sticky behavior (1)
+Status: Applied locally -- verification pending
+Date: 20-06-2026
+
+Related change:
+- PawRoutine custom header
+
+Files changed:
+- `sections/pawroutine-custom-header.liquid`
+- `assets/pawroutine-custom-header.css`
+
+Change:
+- Reworked the custom header's sticky behavior to follow Horizon's native sticky-header pattern.
+- The outer custom-header section is used as the sticky container.
+- The inner `<header-component>` conditionally receives `sticky="always"` when the existing `sticky_header` setting is enabled.
+- Removed the previous custom sticky approach that applied `position: sticky` directly to the inner header component.
+- Kept the announcement marquee as a separate, non-sticky section; it scrolls away while the main header remains pinned.
+
+Reason:
+- The previous implementation attempted to make the inner component sticky. Its surrounding section still scrolled with the page, so the header did not remain pinned reliably.
+- Aligning the markup and CSS with Horizon's sticky-header structure is more maintainable and less likely to conflict with theme behavior during future updates.
+
+Verification required:
+- Run `shopify theme dev` and test the local preview.
+- With the Sticky header setting enabled, scroll past the hero and confirm that the logo, navigation, and header actions remain pinned at the top.
+- Confirm the announcement marquee scrolls away normally.
+- Recheck desktop and mobile navigation, including opening and closing the mobile drawer.
+- After successful local testing and deployment, update this status to `Applied` and note the deployment date.
+
+Notes:
+- Do not remove the existing `sticky_header` checkbox setting from the section schema; it remains the merchant-facing control for this behavior.
+- Treat this as an update to the existing custom-header feature, not as a separate feature.
+---
 ---
 
 ## STATUS HISTORY
