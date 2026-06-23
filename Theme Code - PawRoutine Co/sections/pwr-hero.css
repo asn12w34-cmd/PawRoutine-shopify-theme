@@ -1,0 +1,195 @@
+/*
+CUSTOM FILE [PR-003] — PawRoutine split promo hero styles | See docs/CUSTOM_CHANGE_PAWROUTINE.md#PR-003
+*/
+
+/* PawRoutine split promo hero
+   Isolated, mobile-first, and intentionally JavaScript-free. */
+
+.pawroutine-split-promo-hero {
+  --pr-split-promo-desktop-padding-block: clamp(3rem, 5vw, 5.5rem);
+  --pr-split-promo-desktop-content-padding-block-start: clamp(3.5rem, 8vw, 8rem);
+  --pr-split-promo-desktop-content-padding-block-end: clamp(2.5rem, 5vw, 5rem);
+  --pr-split-promo-mobile-padding-block: 2.5rem;
+  --pr-split-promo-mobile-content-gap: 1.25rem;
+  --pr-split-promo-mobile-row-gap: 2rem;
+  --pr-split-promo-column-gap: clamp(2rem, 4vw, 5.5rem);
+
+  position: relative;
+  isolation: isolate;
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+}
+
+.pawroutine-split-promo-hero--desktop-spacing-compact {
+  --pr-split-promo-desktop-padding-block: clamp(2rem, 3.5vw, 3.5rem);
+  --pr-split-promo-desktop-content-padding-block-start: clamp(2.5rem, 5vw, 5rem);
+  --pr-split-promo-desktop-content-padding-block-end: clamp(2rem, 3.5vw, 3.5rem);
+}
+
+.pawroutine-split-promo-hero--desktop-spacing-generous {
+  --pr-split-promo-desktop-padding-block: clamp(4rem, 7vw, 7rem);
+  --pr-split-promo-desktop-content-padding-block-start: clamp(4rem, 10vw, 10rem);
+  --pr-split-promo-desktop-content-padding-block-end: clamp(3rem, 6vw, 6rem);
+}
+
+.pawroutine-split-promo-hero--mobile-spacing-compact {
+  --pr-split-promo-mobile-padding-block: 1.5rem;
+  --pr-split-promo-mobile-content-gap: 1rem;
+  --pr-split-promo-mobile-row-gap: 1.5rem;
+}
+
+.pawroutine-split-promo-hero--mobile-spacing-generous {
+  --pr-split-promo-mobile-padding-block: 3.5rem;
+  --pr-split-promo-mobile-content-gap: 1.5rem;
+  --pr-split-promo-mobile-row-gap: 2.75rem;
+}
+
+.pawroutine-split-promo-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pr-split-promo-mobile-row-gap);
+  width: min(100%, var(--page-width));
+  margin-inline: auto;
+  padding-block: var(--pr-split-promo-mobile-padding-block);
+  padding-inline: var(--page-margin);
+}
+
+.pawroutine-split-promo-hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--pr-split-promo-mobile-content-gap);
+  min-width: 0;
+}
+
+.pawroutine-split-promo-hero__heading {
+  max-inline-size: 13ch;
+  margin: 0;
+  color: var(--color-foreground-heading);
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
+  font-weight: var(--font-heading--weight);
+  font-size: clamp(2.7rem, 11vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: var(--letter-spacing--heading-tight);
+  text-transform: none;
+  text-wrap: balance;
+}
+
+.pawroutine-split-promo-hero__heading--placeholder {
+  opacity: 0.7;
+}
+
+.pawroutine-split-promo-hero__description {
+  max-inline-size: 34rem;
+  color: var(--color-foreground);
+}
+
+.pawroutine-split-promo-hero__description > * {
+  margin: 0;
+}
+
+.pawroutine-split-promo-hero__description > * + * {
+  margin-block-start: 0.75rem;
+}
+
+.pawroutine-split-promo-hero__button {
+  margin-block-start: 0.5rem;
+  padding-block: 1rem;
+  padding-inline: 1.5rem;
+  text-transform: none;
+}
+
+.pawroutine-split-promo-hero__media {
+  min-width: 0;
+}
+
+.pawroutine-split-promo-hero__media-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1.05;
+  background-color: rgb(var(--color-foreground-rgb) / var(--opacity-5-15));
+  border-top-left-radius: 50% 48%;
+  border-top-right-radius: 50% 48%;
+}
+
+.pawroutine-split-promo-hero__picture,
+.pawroutine-split-promo-hero__image,
+.pawroutine-split-promo-hero__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pawroutine-split-promo-hero__image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.pawroutine-split-promo-hero__placeholder {
+  color: rgb(var(--color-foreground-rgb) / var(--opacity-30-60));
+  background-color: rgb(var(--color-foreground-rgb) / var(--opacity-5-15));
+}
+
+.pawroutine-split-promo-hero--without-media .pawroutine-split-promo-hero__content {
+  max-inline-size: 48rem;
+}
+
+@media screen and (min-width: 750px) {
+  .pawroutine-split-promo-hero__inner {
+    width: min(100%, var(--wide-page-width));
+    padding-inline: var(--page-margin);
+  }
+
+  .pawroutine-split-promo-hero__heading {
+    font-size: clamp(3.3rem, 7vw, 5.6rem);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .pawroutine-split-promo-hero__inner {
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+    align-items: stretch;
+    column-gap: var(--pr-split-promo-column-gap);
+    padding-block: var(--pr-split-promo-desktop-padding-block);
+  }
+
+  .pawroutine-split-promo-hero__content {
+    align-self: stretch;
+    justify-content: flex-end;
+    padding-block: var(--pr-split-promo-desktop-content-padding-block-start)
+      var(--pr-split-promo-desktop-content-padding-block-end);
+  }
+
+  .pawroutine-split-promo-hero__heading {
+    max-inline-size: 11ch;
+    font-size: clamp(3.75rem, 4.6vw, 6.2rem);
+  }
+
+  .pawroutine-split-promo-hero__media-frame {
+    aspect-ratio: 1.26 / 1;
+    border-top-left-radius: 50% 58%;
+    border-top-right-radius: 50% 58%;
+  }
+
+  .pawroutine-split-promo-hero--media-left .pawroutine-split-promo-hero__content {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .pawroutine-split-promo-hero--media-left .pawroutine-split-promo-hero__media {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .pawroutine-split-promo-hero--without-media .pawroutine-split-promo-hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pawroutine-split-promo-hero__button {
+    transition: none;
+  }
+}
