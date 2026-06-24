@@ -42,8 +42,181 @@ Once a code change has been logged, keep the original entry. If the change is la
 ## CHANGE LOG
 
 ---
+### PawRoutine split promo hero (PR-003)
 
-### PawRoutine custom header
+Status: Applied
+Last updated: 24-06-2026
+
+Trigger:
+
+* Planned homepage section rebuild inspired by the visual structure of Pupwell’s promotional hero layout.
+
+Context:
+
+* A new custom homepage promotional hero was created for PawRoutine.
+* It is designed as a reusable split-layout campaign section rather than a replacement for the native theme Hero.
+* The section currently sits below the existing native homepage Hero and above the Featured collection.
+* The visual reference was Pupwell’s promotional split hero: editorial text on one side and a large arched image frame on the other.
+* This is a layout reference only. No Pupwell code, assets, branding, or copy were reused.
+
+Scope:
+
+* `sections/pwr-hero.liquid`
+* `assets/pwr-hero.css`
+
+Change summary:
+
+* Added a custom homepage-only Shopify section named `Pwr split hero`.
+* Added a dedicated CSS asset for the section.
+* Added a responsive split desktop layout with:
+
+  * campaign text and optional CTA on one side;
+  * a configurable media area on the other side;
+  * selectable desktop media position;
+  * a tall editorial arch image frame with a flat bottom edge;
+  * desktop content aligned lower in its column.
+* Added a mobile layout where text and CTA appear before the image.
+* Added optional separate desktop and mobile image pickers.
+* Added configurable heading, supporting text, button label, button link, colour scheme, desktop spacing, and mobile spacing.
+* Added handling for missing images and incomplete CTA settings.
+* The section uses no JavaScript, slider, animation, product binding, or hard-coded image URL.
+
+Reasoning:
+
+* The feature was built as an isolated custom section to reproduce the desired split promotional layout without editing the native Hero, shared layout files, global CSS, header, or marquee.
+* Keeping the Liquid and CSS in dedicated PawRoutine files makes the feature easier to maintain, test, remove, or reuse for future campaigns.
+* The section is intentionally placed below the existing native Hero during the current practice phase, so both layouts can remain available for comparison.
+
+Important implementation details:
+
+* `pwr-hero.liquid` loads its stylesheet through:
+
+  ```liquid
+  {{ 'pwr-hero.css' | asset_url | stylesheet_tag }}
+  ```
+
+* Because the stylesheet uses `asset_url`, `pwr-hero.css` must remain inside the `assets` directory.
+
+* The custom section is addable through Shopify Theme Editor because it includes a section preset.
+
+* The section is restricted to the homepage template through its schema configuration.
+
+* Homepage ordering is managed through Shopify Theme Editor. Do not manually edit `templates/index.json` to add, remove, or reorder this section.
+
+Image-frame behavior:
+
+* The image frame uses `overflow: hidden`, top-only border radii, and `object-fit: cover`.
+* The desktop image frame is intentionally taller than the original version to better match the desired editorial/Pupwell-style proportion.
+* The desktop media frame currently uses a portrait-oriented aspect ratio and separate top-corner radius values.
+* Adjusting the aspect ratio changes the section height because the media frame determines the height of the desktop grid row.
+* Adjusting only the top border-radius values changes the apparent roundness of the arch without reducing the frame height.
+* Use Shopify image focal points and appropriately composed source imagery to control important product or dog positioning within the crop.
+
+Dependencies / assumptions:
+
+* The section depends on Horizon theme CSS variables and utility conventions, including:
+
+  * `--page-width`
+  * `--wide-page-width`
+  * `--page-margin`
+  * theme colour-scheme variables
+  * theme heading typography variables
+  * the native `button` class styling
+* The section assumes the current theme continues to provide these variables and button styles.
+* The section depends on a selected desktop image for the full split-media design.
+* If no mobile image is selected, the desktop image is reused on mobile.
+* The button is intentionally hidden unless both the button label and button link are provided.
+
+Risks / update sensitivity:
+
+* If the theme changes or removes its page-width, colour, typography, or button CSS variables, the section should be visually rechecked.
+* If the native theme significantly changes the meaning or styling of the `button` class, the CTA may need adjustment.
+* If future changes rename either custom file, update the stylesheet reference inside `pwr-hero.liquid`.
+* Wide source images can crop heavily in the tall desktop arch. Recheck the crop after changing campaign imagery.
+* Keep all selectors inside `pwr-hero.css` scoped to `.pawroutine-split-promo-hero` to prevent visual effects on other homepage sections.
+
+Rollback / removal:
+
+* Remove the `Pwr split hero` instance through Shopify Theme Editor first.
+* Confirm the section is no longer used in the homepage template.
+* Remove `sections/pwr-hero.liquid` and `assets/pwr-hero.css` only after confirming there are no remaining references.
+* Do not remove or modify the native Hero, header, marquee, or global CSS as part of removing this feature.
+
+Verification checklist:
+
+* Confirm the section appears in Homepage → Add section.
+* Confirm it can be positioned below the native Hero and above Featured collection.
+* Confirm desktop text/media layout works with media on both right and left.
+* Confirm the image appears inside the top-rounded arch frame.
+* Confirm the desktop frame remains tall and the top curve remains visually balanced.
+* Confirm mobile displays text and CTA before the image.
+* Confirm desktop-image fallback works when no mobile image is chosen.
+* Confirm the CTA disappears when either its label or link is missing.
+* Confirm no horizontal scrolling occurs on desktop or mobile.
+* Confirm the native Hero, Header, PawRoutine marquee, Featured collection, and other homepage sections remain unchanged.
+* Confirm `shopify theme check` passes before pushing future updates.
+
+Notes:
+
+* Do not log routine campaign copy, chosen images, Theme Editor placement changes, or ordinary colour-scheme selections as separate code changes.
+* Add a status update only when this custom feature is materially changed, removed, replaced, or affected by a theme update.
+
+### PawRoutine announcement marquee (PR-002)
+Status: Applied
+Last updated: 19-06-2026
+
+Trigger:
+- Planned customization
+
+Context:
+- A custom announcement marquee was created to display short promotional or brand messages in a moving announcement bar.
+- This is separate from the simple announcement option inside the custom header.
+
+Scope:
+- `sections/pawroutine-announcement-marquee.liquid`
+- `assets/pawroutine-announcement-marquee.css`
+
+Change summary:
+- Added a custom Liquid announcement marquee section with editable message blocks.
+- Added configurable settings for enabling/disabling the marquee, accessibility label, scroll speed, spacing, typography, colors, and vertical padding.
+- Added CSS-only horizontal scrolling animation for repeated announcement messages.
+- Added accessibility handling so visual duplicate messages are hidden from assistive technology where needed.
+- Added reduced-motion behavior so continuous scrolling is disabled for users who prefer reduced motion.
+
+Reasoning:
+- This approach keeps the promotional announcement behavior separate from the main custom header code.
+- A dedicated marquee section is easier to adjust, remove, or reuse without touching the main header files.
+
+Dependencies / assumptions:
+- The marquee depends on at least one non-empty announcement block to display.
+- The scrolling effect depends on the CSS animation and repeated message groups.
+- The section assumes short announcement messages; very long text may need extra testing on small screens.
+- Optional message links depend on correct Shopify URLs being selected or entered.
+
+Risks / update sensitivity:
+- If the marquee markup or CSS class names are changed, the scrolling animation may break.
+- If linked messages are added, keyboard focus and accessibility behavior should be rechecked.
+- If the store uses another announcement bar app or native announcement feature at the same time, duplicate announcement areas may appear.
+- Recheck the marquee after theme updates, accessibility changes, or major header-area layout changes.
+
+Rollback / removal:
+- Remove the marquee section from the active theme layout/settings.
+- Delete `sections/pawroutine-announcement-marquee.liquid` and `assets/pawroutine-announcement-marquee.css` only after confirming they are no longer referenced.
+- Use the simpler announcement option in the custom header or the theme's native announcement feature if a marquee is no longer needed.
+
+Verification checklist:
+- Confirm the marquee appears only when enabled and when at least one message is filled in.
+- Confirm announcement messages display correctly on desktop and mobile.
+- Confirm the scrolling animation runs smoothly.
+- Confirm hover/focus pauses the marquee where expected.
+- Confirm reduced-motion mode disables continuous scrolling.
+- Confirm optional links are clickable and keyboard-accessible.
+
+Notes:
+- Keep this entry separate from the custom header entry because the marquee can be adjusted or removed without changing the core header structure.
+
+
+### PawRoutine custom header (PR-001)
 Status: Applied
 Last updated: 19-06-2026
 
@@ -99,7 +272,7 @@ Verification checklist:
 Notes:
 - Treat these files as one feature. Do not document the CSS, JS, Liquid section, and action snippet as separate changes unless they later become independent features.
 
-### Status update — Native theme header restored (3)
+#### Status update — Native theme header restored (2)
 
 Status: Applied
 Date: 22-06-2026
@@ -152,61 +325,10 @@ Verification:
 * Confirm the PawRoutine marquee still appears below the header and scrolls away independently.
 * Confirm no duplicate header, duplicate navigation, or duplicate header-action elements render.
 
-### PawRoutine announcement marquee (2)
-Status: Applied
-Last updated: 19-06-2026
 
-Trigger:
-- Planned customization
 
-Context:
-- A custom announcement marquee was created to display short promotional or brand messages in a moving announcement bar.
-- This is separate from the simple announcement option inside the custom header.
 
-Scope:
-- `sections/pawroutine-announcement-marquee.liquid`
-- `assets/pawroutine-announcement-marquee.css`
-
-Change summary:
-- Added a custom Liquid announcement marquee section with editable message blocks.
-- Added configurable settings for enabling/disabling the marquee, accessibility label, scroll speed, spacing, typography, colors, and vertical padding.
-- Added CSS-only horizontal scrolling animation for repeated announcement messages.
-- Added accessibility handling so visual duplicate messages are hidden from assistive technology where needed.
-- Added reduced-motion behavior so continuous scrolling is disabled for users who prefer reduced motion.
-
-Reasoning:
-- This approach keeps the promotional announcement behavior separate from the main custom header code.
-- A dedicated marquee section is easier to adjust, remove, or reuse without touching the main header files.
-
-Dependencies / assumptions:
-- The marquee depends on at least one non-empty announcement block to display.
-- The scrolling effect depends on the CSS animation and repeated message groups.
-- The section assumes short announcement messages; very long text may need extra testing on small screens.
-- Optional message links depend on correct Shopify URLs being selected or entered.
-
-Risks / update sensitivity:
-- If the marquee markup or CSS class names are changed, the scrolling animation may break.
-- If linked messages are added, keyboard focus and accessibility behavior should be rechecked.
-- If the store uses another announcement bar app or native announcement feature at the same time, duplicate announcement areas may appear.
-- Recheck the marquee after theme updates, accessibility changes, or major header-area layout changes.
-
-Rollback / removal:
-- Remove the marquee section from the active theme layout/settings.
-- Delete `sections/pawroutine-announcement-marquee.liquid` and `assets/pawroutine-announcement-marquee.css` only after confirming they are no longer referenced.
-- Use the simpler announcement option in the custom header or the theme's native announcement feature if a marquee is no longer needed.
-
-Verification checklist:
-- Confirm the marquee appears only when enabled and when at least one message is filled in.
-- Confirm announcement messages display correctly on desktop and mobile.
-- Confirm the scrolling animation runs smoothly.
-- Confirm hover/focus pauses the marquee where expected.
-- Confirm reduced-motion mode disables continuous scrolling.
-- Confirm optional links are clickable and keyboard-accessible.
-
-Notes:
-- Keep this entry separate from the custom header entry because the marquee can be adjusted or removed without changing the core header structure.
-
-### Status update — PawRoutine custom header sticky behavior (1)
+#### Status update — PawRoutine custom header sticky behavior (1)
 Status: Applied locally -- verification pending
 Date: 20-06-2026
 
