@@ -100,6 +100,7 @@
       "block_order": [
         "group_3cB4GW"
       ],
+      "disabled": true,
       "settings": {
         "media_type_1": "image",
         "image_1": "shopify://shop_images/Hero_1.png",
@@ -130,6 +131,21 @@
         "reflection_opacity": 75,
         "padding-block-start": 0,
         "padding-block-end": 0
+      }
+    },
+    "pwr_hero_wQk4Fx": {
+      "type": "pwr-hero",
+      "name": "Pwr split hero",
+      "settings": {
+        "desktop_image": "shopify://shop_images/Nose_Paw_Balm_standard.png",
+        "heading": "Daily care, gently made.",
+        "supporting_text": "<p>Thoughtfully made essentials for happier, healthier daily routines.</p>",
+        "button_label": "",
+        "button_link": "",
+        "desktop_media_position": "right",
+        "color_scheme": "scheme-1",
+        "desktop_spacing": "generous",
+        "mobile_spacing": "standard"
       }
     },
     "product_list_X8Q7bi": {
@@ -600,6 +616,7 @@
   },
   "order": [
     "hero_RkimKJ",
+    "pwr_hero_wQk4Fx",
     "product_list_X8Q7bi",
     "section_RhpYRt"
   ]

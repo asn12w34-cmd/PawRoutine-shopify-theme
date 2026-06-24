@@ -168,9 +168,14 @@ CUSTOM FILE [PR-003] — PawRoutine split promo hero styles | See docs/CUSTOM_CH
   }
 
   .pawroutine-split-promo-hero__media-frame {
-    aspect-ratio: 1.26 / 1;
-    border-top-left-radius: 50% 58%;
-    border-top-right-radius: 50% 58%;
+    /*
+      PR-003 visual adjustment:
+      A 1.10 / 1 ratio makes the desktop arch about 15% taller than 1.26 / 1.
+      The grid row grows with the frame, so the full section becomes taller too.
+    */
+    aspect-ratio: 0.9 / 1;
+    border-top-left-radius: 50% 42%;
+    border-top-right-radius: 50% 42%;
   }
 
   .pawroutine-split-promo-hero--media-left .pawroutine-split-promo-hero__content {
