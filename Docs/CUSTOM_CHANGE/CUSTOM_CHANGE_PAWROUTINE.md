@@ -42,6 +42,215 @@ Once a code change has been logged, keep the original entry. If the change is la
 ## CHANGE LOG
 
 ---
+---
+
+### PawRoutine homepage product showcase (PR-004)
+
+Status: Applied
+Last updated: 25-06-2026
+
+Trigger:
+
+* Replaced the earlier generic homepage featured-product experiment with a visually locked custom homepage product showcase inspired by the desired Pupwell-style editorial product composition.
+
+Context:
+
+* This feature is a homepage section, not an individual product-page template.
+* It is designed to sit below the PawRoutine split hero and showcase one selected Shopify product with a controlled gallery, editorial product story, and real purchase controls.
+* The visual reference was the central desktop/mobile product-detail composition observed on Pupwell: vertical desktop thumbnails, a large portrait media stage, a generous right-side product-information column, and a mobile swipe gallery.
+* This is a layout and interaction reference only. No Pupwell code, branding, assets, copy, or product data were reused.
+
+Scope:
+
+* `sections/pwr-showcase.liquid`
+* `assets/pwr-showcase.css`
+* `assets/pwr-showcase.js`
+
+Change summary:
+
+* Added a new custom homepage-only Shopify section named `Pwr product showcase`.
+
+* Added a dedicated scoped stylesheet and JavaScript asset.
+
+* Added a fixed desktop composition with:
+
+  * a narrow vertical thumbnail rail on the left;
+  * a large portrait-oriented active media area;
+  * a right-side editorial product-information and purchase column;
+  * desktop-only sticky media behaviour.
+
+* Added a mobile composition with:
+
+  * horizontal swipeable media slides;
+  * intentionally visible neighbouring slides to indicate swipe behaviour;
+  * dot pagination;
+  * normal document scrolling rather than sticky media;
+  * full-width mobile purchase controls.
+
+* Added an in-gallery visible magnifier button.
+
+* Added a custom accessible image dialog with close, previous, and next controls.
+
+* Added Theme Editor controls for:
+
+  * featured product;
+  * colour scheme;
+  * accent colour;
+  * category/routine label and optional link;
+  * short product promise;
+  * show/hide selected product description;
+  * benefits or included-items rich text;
+  * shipping note;
+  * Add to Cart label.
+
+* Added live variant behaviour for:
+
+  * selected variant ID;
+  * price;
+  * compare-at price;
+  * saving amount;
+  * availability;
+  * Add to Cart state;
+  * accelerated checkout visibility;
+  * quantity rules;
+  * selected variant featured media.
+
+* Added real Shopify Add to Cart and accelerated checkout support using the selected product and Shopify product form.
+
+Reasoning:
+
+* The previous homepage featured-product attempt depended too heavily on Savor’s generic configurable featured-product structure, making it difficult to reproduce the intended fixed editorial composition.
+* This replacement uses a deliberately constrained custom structure for the visual layout while preserving Shopify-native product-form and payment behaviour.
+* The feature is isolated in three PawRoutine-specific files, avoiding changes to product-page templates, native gallery files, header files, cart files, global CSS, and shared theme JavaScript.
+
+Important implementation details:
+
+* `pwr-showcase.liquid` loads its assets through:
+
+  ```liquid
+  {{ 'pwr-showcase.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'pwr-showcase.js' | asset_url }}" defer="defer"></script>
+  ```
+
+* Both assets must remain inside the `assets` directory and retain the same filenames unless the Liquid references are updated.
+
+* The section is addable only on the homepage because its schema uses:
+
+  ```json
+  "enabled_on": {
+    "templates": ["index"]
+  }
+  ```
+
+* Homepage placement is managed through Shopify Theme Editor. Do not manually edit `templates/index.json` to add, remove, or reorder the section.
+
+* The section requires a product to be selected in Theme Editor. If none is selected, it displays an editor-facing placeholder message.
+
+* The section uses Shopify product media from the selected product. The first media item is prioritised for loading; later media items use lazy loading.
+
+* The custom gallery supports selecting media through desktop thumbnails, mobile dots, swipe/scroll behaviour, and the magnifier dialog.
+
+* The custom image dialog supports:
+
+  * close button;
+  * previous and next image buttons;
+  * Escape-key close through the native HTML dialog element;
+  * focus return to the trigger that opened it;
+  * keyboard left/right navigation.
+
+* The section uses Shopify’s native product form and dynamic payment button through:
+
+  * `{% form 'product', product %}`
+  * `product-form-component`
+  * `add-to-cart-component`
+  * `{{ form | payment_button }}`
+
+* Do not replace the custom Add to Cart markup with a plain HTML form/button without retesting cart behaviour, availability states, and accelerated checkout.
+
+* The section’s JavaScript contains the custom gallery, lightbox, variant-state, price, savings, availability, quantity, and selected-media logic. Keep all `data-pwr-*` attributes aligned with the script if markup changes are made.
+
+* All styling is scoped beneath `.pwr-showcase` to prevent effects on other theme sections.
+
+Dependencies / assumptions:
+
+* The section depends on the current Horizon/Savor theme components and conventions, including:
+
+  * `product-form-component`;
+  * `add-to-cart-component`;
+  * the native `button` and `button-secondary` styles;
+  * theme colour-scheme variables;
+  * `--color-background`;
+  * `--color-foreground`;
+  * `settings.add_to_cart_animation`;
+  * native Shopify dynamic checkout support.
+
+* The selected product should have several well-prepared portrait-oriented product images for the intended visual result.
+
+* The best media format for this section is consistent 4:5 editorial campaign imagery.
+
+* Variant-specific featured media is optional but recommended where variants have visibly different packaging, flavour, size, or colour.
+
+* Products with no media show a generic placeholder.
+
+* Non-image product media currently display their preview image in the custom gallery. Product videos and 3D models are not rendered as playable or interactive media within this section.
+
+Risks / update sensitivity:
+
+* If the theme changes or removes `product-form-component`, `add-to-cart-component`, their `ref` attributes, or their event handling, Add to Cart behaviour must be rechecked.
+
+* If the theme changes the native `.button`, `.button-secondary`, colour-scheme variables, or form error styles, the purchase controls may need visual adjustment.
+
+* If the structure or names of `data-pwr-*` attributes change, the custom JavaScript may stop syncing the gallery, variants, prices, quantity rules, or lightbox correctly.
+
+* The mobile “peeking slides” layout depends on the dedicated scoped CSS and should be checked after changes to gallery dimensions or responsive breakpoints.
+
+* Long product titles, very long descriptions, many variant options, or a large number of media files should be tested individually.
+
+* Recheck the section after theme updates, major cart/product-form updates, Shopify dynamic-checkout changes, or JavaScript refactors.
+
+* The custom lightbox does not include pinch-to-zoom or drag-to-zoom. Do not assume it has the same advanced image controls as the native Savor product-page lightbox.
+
+Rollback / removal:
+
+* Remove the `Pwr product showcase` instance through Shopify Theme Editor first.
+
+* Confirm it is no longer present on the homepage.
+
+* Remove these files only after confirming they are not referenced anywhere else:
+
+  * `sections/pwr-showcase.liquid`
+  * `assets/pwr-showcase.css`
+  * `assets/pwr-showcase.js`
+
+* Do not remove or modify native product-form, cart, product-page, header, or global theme files as part of removing this feature.
+
+* If the previous `Pwr featured product` experiment still exists in the theme codebase but is no longer used, remove its old custom files only in a separate cleanup change after searching for references.
+
+Verification checklist:
+
+* Confirm `Pwr product showcase` appears in Homepage → Add section.
+* Confirm it can be positioned below `Pwr split hero`.
+* Confirm selecting a product loads its title, media, price, description, variants, and purchase controls.
+* Confirm desktop displays the vertical thumbnail rail, portrait media stage, and right-side information column.
+* Confirm desktop media remains sticky while the product-information column scrolls.
+* Confirm thumbnails select the correct active media item.
+* Confirm mobile shows a horizontally swipeable gallery, peeking neighbouring slides, and working dots.
+* Confirm the magnifier button opens the image dialog.
+* Confirm close, previous, next, Escape, and keyboard arrow controls work in the image dialog.
+* Confirm changing variants updates the selected option label, variant ID, price, compare-at price, saving amount, Add to Cart availability, payment button visibility, and featured media where assigned.
+* Confirm quantity controls respect the selected variant’s minimum, maximum, and increment rules.
+* Confirm Add to Cart works and the cart updates normally.
+* Confirm accelerated checkout appears only when the selected variant is available.
+* Confirm no horizontal page scrolling appears on desktop or mobile.
+* Confirm the native Header, PawRoutine marquee, split hero, collection sections, product pages, cart, and global theme styling remain unchanged.
+* Confirm `shopify theme check` passes before future pushes.
+
+Notes:
+
+* Do not document ordinary Theme Editor content edits, selected products, individual images, product descriptions, product prices, routine copy, or colour-scheme choices as separate code changes.
+* Treat the three showcase files as one feature.
+* Add a status update rather than replacing this entry if the section is materially redesigned, removed, or adapted after a future theme update.
+
 ### PawRoutine split promo hero (PR-003)
 
 Status: Applied

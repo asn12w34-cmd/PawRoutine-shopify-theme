@@ -148,6 +148,22 @@
         "mobile_spacing": "standard"
       }
     },
+    "pwr_showcase_a4hPpK": {
+      "type": "pwr-showcase",
+      "name": "Pwr product showcase",
+      "settings": {
+        "product": "calmbite-evening-treats",
+        "color_scheme": "",
+        "accent_color": "#1F4A3F",
+        "eyebrow_label": "Daily care",
+        "eyebrow_link": "shopify://products/calmbite-evening-treats",
+        "promise": "Thoughtful daily care for the moments that matter.",
+        "show_description": true,
+        "benefits": "",
+        "shipping_note": "Shipping calculated at checkout.",
+        "add_label": "Add to cart"
+      }
+    },
     "product_list_X8Q7bi": {
       "type": "product-list",
       "blocks": {
@@ -617,6 +633,7 @@
   "order": [
     "hero_RkimKJ",
     "pwr_hero_wQk4Fx",
+    "pwr_showcase_a4hPpK",
     "product_list_X8Q7bi",
     "section_RhpYRt"
   ]

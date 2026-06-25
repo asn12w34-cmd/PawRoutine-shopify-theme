@@ -1,0 +1,417 @@
+{% comment %}
+  CUSTOM FILE [PR-005] — PawRoutine homepage product showcase.
+  Purpose: a visually locked homepage product feature with an editorial gallery
+  and native Shopify product form / accelerated checkout.
+{% endcomment %}
+
+{{ 'pwr-showcase.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'pwr-showcase.js' | asset_url }}" defer="defer"></script>
+
+{% liquid
+  assign product = section.settings.product
+  assign selected_variant = product.selected_or_first_available_variant
+  assign form_id = 'PwrShowcaseForm-' | append: section.id
+  assign add_label = section.settings.add_label | default: 'Add to cart'
+
+  assign initial_can_add = false
+  assign initial_add_label = 'products.product.unavailable' | t
+  if selected_variant != blank
+    if selected_variant.available
+      assign initial_can_add = true
+      assign initial_add_label = add_label
+    elsif selected_variant.inventory_management == 'shopify' and selected_variant.inventory_quantity <= 0 and selected_variant.inventory_policy == 'deny'
+      assign initial_add_label = 'products.product.sold_out' | t
+    endif
+  endif
+%}
+
+<section
+  id="PwrShowcase-{{ section.id }}"
+  class="pwr-showcase color-{{ section.settings.color_scheme }}"
+  data-pwr-showcase
+  data-add-label="{{ add_label | escape }}"
+  data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
+  data-unavailable-label="{{ 'products.product.unavailable' | t | escape }}"
+  style="--pwr-accent: {{ section.settings.accent_color }};"
+>
+  {% if product == blank %}
+    <div class="pwr-showcase__empty page-width">
+      <p>Select a product in this section’s Theme Editor settings.</p>
+    </div>
+  {% else %}
+    {% capture product_json %}
+      {
+        "variants": [
+          {% for variant in product.variants %}
+            {% liquid
+              assign saving = 0
+              if variant.compare_at_price > variant.price
+                assign saving = variant.compare_at_price | minus: variant.price
+              endif
+            %}
+            {
+              "id": {{ variant.id | json }},
+              "options": {{ variant.options | json }},
+              "available": {{ variant.available | json }},
+              "price": {{ variant.price | money | json }},
+              "compareAt": {% if saving > 0 %}{{ variant.compare_at_price | money | json }}{% else %}""{% endif %},
+              "saving": {% if saving > 0 %}{{ saving | money | json }}{% else %}""{% endif %},
+              "mediaId": {% if variant.featured_media %}{{ variant.featured_media.id | json }}{% else %}null{% endif %},
+              "mediaUrl": {% if variant.featured_media and variant.featured_media.preview_image %}{{ variant.featured_media.preview_image | image_url: width: 160 | json }}{% else %}""{% endif %},
+              "min": {{ variant.quantity_rule.min | default: 1 | json }},
+              "max": {{ variant.quantity_rule.max | json }},
+              "step": {{ variant.quantity_rule.increment | default: 1 | json }}
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ]
+      }
+    {% endcapture %}
+
+    <div class="pwr-showcase__shell">
+      <div class="pwr-showcase__media-column">
+        {% if product.media.size > 0 %}
+          <div class="pwr-showcase__media-layout">
+            <div class="pwr-showcase__thumb-rail" aria-label="{{ product.title | escape }} media">
+              {% for media in product.media %}
+                <button
+                  type="button"
+                  class="pwr-showcase__thumb{% if forloop.first %} is-active{% endif %}"
+                  data-pwr-thumb="{{ forloop.index0 }}"
+                  aria-label="Show image {{ forloop.index }}"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                >
+                  {{
+                    media.preview_image
+                    | image_url: width: 160
+                    | image_tag:
+                      widths: '80, 120, 160',
+                      sizes: '60px',
+                      loading: 'lazy',
+                      alt: media.alt
+                  }}
+                </button>
+              {% endfor %}
+            </div>
+
+            <div class="pwr-showcase__gallery" data-pwr-gallery>
+              <div
+                class="pwr-showcase__track"
+                data-pwr-track
+                aria-label="{{ product.title | escape }} image gallery"
+              >
+                {% for media in product.media %}
+                  {% liquid
+                    if forloop.first
+                      assign loading = 'eager'
+                      assign fetch_priority = 'high'
+                    else
+                      assign loading = 'lazy'
+                      assign fetch_priority = 'auto'
+                    endif
+                  %}
+                  <article
+                    class="pwr-showcase__slide{% if forloop.first %} is-active{% endif %}"
+                    data-pwr-slide="{{ forloop.index0 }}"
+                    data-pwr-media-id="{{ media.id }}"
+                    data-pwr-zoom-src="{{ media.preview_image | image_url: width: 2400 }}"
+                    data-pwr-zoom-alt="{{ media.alt | escape }}"
+                    aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
+                  >
+                    <div class="pwr-showcase__media-frame">
+                      {% if media.media_type == 'image' %}
+                        {{
+                          media.preview_image
+                          | image_url: width: 2400
+                          | image_tag:
+                            widths: '420, 640, 820, 1100, 1500, 2000, 2400',
+                            sizes: '(min-width: 990px) min(46vw, 720px), 90vw',
+                            loading: loading,
+                            fetchpriority: fetch_priority,
+                            class: 'pwr-showcase__image',
+                            alt: media.alt
+                        }}
+                      {% else %}
+                        {{
+                          media.preview_image
+                          | image_url: width: 2400
+                          | image_tag:
+                            widths: '420, 640, 820, 1100, 1500, 2000, 2400',
+                            sizes: '(min-width: 990px) min(46vw, 720px), 90vw',
+                            loading: loading,
+                            class: 'pwr-showcase__image',
+                            alt: media.alt
+                        }}
+                      {% endif %}
+                    </div>
+                    <button
+                      type="button"
+                      class="pwr-showcase__zoom"
+                      data-pwr-open-dialog
+                      aria-label="Zoom image {{ forloop.index }}"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <circle cx="10.75" cy="10.75" r="5.75"></circle>
+                        <path d="m15.25 15.25 4.25 4.25"></path>
+                        <path d="M10.75 8v5.5M8 10.75h5.5"></path>
+                      </svg>
+                    </button>
+                  </article>
+                {% endfor %}
+              </div>
+
+              {% if product.media.size > 1 %}
+                <div class="pwr-showcase__dots" aria-label="Gallery pagination">
+                  {% for media in product.media %}
+                    <button
+                      type="button"
+                      class="pwr-showcase__dot{% if forloop.first %} is-active{% endif %}"
+                      data-pwr-dot="{{ forloop.index0 }}"
+                      aria-label="Show image {{ forloop.index }}"
+                      aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                    ></button>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <dialog class="pwr-showcase__dialog" data-pwr-dialog aria-label="Expanded product image">
+            <div class="pwr-showcase__dialog-shell">
+              <button type="button" class="pwr-showcase__dialog-close" data-pwr-close-dialog aria-label="Close image viewer">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+              </button>
+              <button type="button" class="pwr-showcase__dialog-nav pwr-showcase__dialog-nav--prev" data-pwr-dialog-prev aria-label="Previous image">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m14.5 5-7 7 7 7"></path></svg>
+              </button>
+              <img class="pwr-showcase__dialog-image" data-pwr-dialog-image src="" alt="">
+              <button type="button" class="pwr-showcase__dialog-nav pwr-showcase__dialog-nav--next" data-pwr-dialog-next aria-label="Next image">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9.5 5 7 7-7 7"></path></svg>
+              </button>
+            </div>
+          </dialog>
+        {% else %}
+          <div class="pwr-showcase__media-fallback">
+            {{ 'product-apparel-1' | placeholder_svg_tag: 'pwr-showcase__placeholder' }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="pwr-showcase__details">
+        {% if section.settings.eyebrow_label != blank %}
+          <p class="pwr-showcase__eyebrow">
+            {% if section.settings.eyebrow_link != blank %}
+              <a href="{{ section.settings.eyebrow_link }}">{{ section.settings.eyebrow_label | escape }}</a>
+            {% else %}
+              {{ section.settings.eyebrow_label | escape }}
+            {% endif %}
+          </p>
+        {% endif %}
+
+        <h2 class="pwr-showcase__title">
+          <a href="{{ product.url }}">{{ product.title | escape }}</a>
+        </h2>
+
+        <div class="pwr-showcase__pricing" aria-live="polite">
+          <span class="pwr-showcase__price-label">Price</span>
+          <p class="pwr-showcase__price-line">
+            <span class="pwr-showcase__compare{% unless selected_variant.compare_at_price > selected_variant.price %} is-hidden{% endunless %}" data-pwr-compare>
+              {% if selected_variant.compare_at_price > selected_variant.price %}{{ selected_variant.compare_at_price | money }}{% endif %}
+            </span>
+            <span class="pwr-showcase__price" data-pwr-price>{{ selected_variant.price | money }}</span>
+            <span class="pwr-showcase__saving{% unless selected_variant.compare_at_price > selected_variant.price %} is-hidden{% endunless %}" data-pwr-saving>
+              {% if selected_variant.compare_at_price > selected_variant.price %}Save {{ selected_variant.compare_at_price | minus: selected_variant.price | money }}{% endif %}
+            </span>
+          </p>
+          <p class="pwr-showcase__status visually-hidden" data-pwr-status aria-live="polite"></p>
+        </div>
+
+        {% if section.settings.promise != blank %}
+          <p class="pwr-showcase__promise">{{ section.settings.promise | escape }}</p>
+        {% endif %}
+
+        {% if section.settings.show_description and product.description != blank %}
+          <div class="pwr-showcase__description rte">
+            {{ product.description }}
+          </div>
+        {% endif %}
+
+        {% if section.settings.benefits != blank %}
+          <div class="pwr-showcase__benefits rte">
+            {{ section.settings.benefits }}
+          </div>
+        {% endif %}
+
+        {% if section.settings.shipping_note != blank %}
+          <p class="pwr-showcase__shipping">{{ section.settings.shipping_note | escape }}</p>
+        {% endif %}
+
+        <product-form-component
+          class="pwr-showcase__form-component"
+          data-section-id="{{ section.id }}"
+          data-product-id="{{ product.id }}"
+          data-product-url="{{ product.url }}"
+          data-quantity-default="1"
+          data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+          on:submit="/handleSubmit"
+        >
+          <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
+
+          {% form 'product', product, id: form_id, data-type: 'add-to-cart-form' %}
+            <input type="hidden" name="id" value="{{ selected_variant.id }}" ref="variantId" data-pwr-variant-id>
+
+            {% unless product.has_only_default_variant %}
+              <div class="pwr-showcase__variants" data-pwr-variants>
+                {% for option in product.options_with_values %}
+                  <fieldset class="pwr-showcase__option" data-pwr-option-group="{{ forloop.index0 }}">
+                    <legend>
+                      <span>{{ option.name | escape }}</span>
+                      <span data-pwr-selected-value="{{ forloop.index0 }}">{{ option.selected_value | escape }}</span>
+                    </legend>
+                    <div class="pwr-showcase__option-values">
+                      {% for value in option.values %}
+                        {% assign input_id = 'PwrOption-' | append: section.id | append: '-' | append: forloop.parentloop.index0 | append: '-' | append: forloop.index0 %}
+                        <input
+                          id="{{ input_id }}"
+                          type="radio"
+                          name="PwrOption-{{ section.id }}-{{ forloop.parentloop.index0 }}"
+                          value="{{ value | escape }}"
+                          data-pwr-option="{{ forloop.parentloop.index0 }}"
+                          {% if value.selected %}checked{% endif %}
+                        >
+                        <label for="{{ input_id }}">{{ value | escape }}</label>
+                      {% endfor %}
+                    </div>
+                  </fieldset>
+                {% endfor %}
+              </div>
+            {% endunless %}
+
+            <div class="pwr-showcase__quantity" data-pwr-quantity>
+              <span class="pwr-showcase__quantity-label">Quantity</span>
+              <div class="pwr-showcase__quantity-control">
+                <button type="button" data-pwr-qty-minus aria-label="Decrease quantity">−</button>
+                <input type="number" name="quantity" value="1" min="1" step="1" inputmode="numeric" data-pwr-qty-input aria-label="Quantity">
+                <button type="button" data-pwr-qty-plus aria-label="Increase quantity">+</button>
+              </div>
+            </div>
+
+            <div class="pwr-showcase__purchase" ref="productFormButtons">
+              <span class="product-form-text__error hidden" ref="addToCartTextError">
+                <span class="svg-wrapper">{{ 'icon-error.svg' | inline_asset_content }}</span>
+              </span>
+
+              <add-to-cart-component
+                ref="addToCartButtonContainer"
+                data-product-variant-media="{% if selected_variant.featured_media and selected_variant.featured_media.preview_image %}{{ selected_variant.featured_media.preview_image | image_url: width: 160 }}{% endif %}"
+                data-add-to-cart-animation="{{ settings.add_to_cart_animation }}"
+              >
+                <button
+                  type="submit"
+                  name="add"
+                  ref="addToCartButton"
+                  on:click="/handleClick"
+                  class="button button-secondary pwr-showcase__add"
+                  data-pwr-add-button
+                  {% unless initial_can_add %}disabled{% endunless %}
+                >
+                  <span class="add-to-cart-text">
+                    <span class="add-to-cart-text__content" data-pwr-add-label>{{ initial_add_label }}</span>
+                  </span>
+                  <span class="add-to-cart__added" aria-hidden="true">
+                    <span class="svg-wrapper add-to-cart__added-icon">{{ 'icon-checkmark-burst.svg' | inline_asset_content }}</span>
+                  </span>
+                </button>
+              </add-to-cart-component>
+
+              <div class="pwr-showcase__accelerated" data-pwr-accelerated {% unless initial_can_add %}hidden{% endunless %}>
+                {{ form | payment_button }}
+              </div>
+            </div>
+          {% endform %}
+        </product-form-component>
+      </div>
+    </div>
+
+    <script type="application/json" data-pwr-product-json>{{ product_json | strip }}</script>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Pwr product showcase",
+  "tag": "section",
+  "class": "shopify-section-pwr-showcase",
+  "enabled_on": {
+    "templates": ["index"]
+  },
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Featured product"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#1F4A3F"
+    },
+    {
+      "type": "header",
+      "content": "Editorial copy"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_label",
+      "label": "Category or routine label",
+      "default": "Daily care"
+    },
+    {
+      "type": "url",
+      "id": "eyebrow_link",
+      "label": "Category or routine link"
+    },
+    {
+      "type": "text",
+      "id": "promise",
+      "label": "Short product promise",
+      "default": "Thoughtful daily care for the moments that matter."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show the selected product description",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "benefits",
+      "label": "Benefits or included items"
+    },
+    {
+      "type": "text",
+      "id": "shipping_note",
+      "label": "Shipping note",
+      "default": "Shipping calculated at checkout."
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add to Cart label",
+      "default": "Add to cart"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pwr product showcase",
+      "category": "Products"
+    }
+  ]
+}
+{% endschema %}
