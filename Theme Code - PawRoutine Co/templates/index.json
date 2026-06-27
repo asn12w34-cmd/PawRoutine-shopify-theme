@@ -471,12 +471,67 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "pwr_sld_hero_nYCzdH": {
+      "type": "pwr-sld-hero",
+      "blocks": {
+        "slide_edNgiq": {
+          "type": "slide",
+          "settings": {
+            "desktop_image": "shopify://shop_images/trial_pic_3.png",
+            "eyebrow": "made for a deeper bond",
+            "heading": "Care for the moments that matter.",
+            "button_label": "shop all",
+            "button_link": "shopify://collections/all",
+            "text_tone": "light",
+            "overlay_strength": "none"
+          }
+        },
+        "slide_UbzG6z": {
+          "type": "slide",
+          "settings": {
+            "desktop_image": "shopify://shop_images/trial_pic_1.png",
+            "eyebrow": "Thoughtfully made for dogs",
+            "heading": "Daily care, gently made.",
+            "button_label": "Explore daily care",
+            "button_link": "shopify://collections/all",
+            "text_tone": "light",
+            "overlay_strength": "light"
+          }
+        },
+        "slide_NhJRMp": {
+          "type": "slide",
+          "settings": {
+            "desktop_image": "shopify://shop_images/trial_pic_2.png",
+            "eyebrow": "Simple ingredients. Real care.",
+            "heading": "A healthier routine for your pet",
+            "button_label": "Discover the collection",
+            "button_link": "shopify://collections/all",
+            "text_tone": "light",
+            "overlay_strength": "light"
+          }
+        }
+      },
+      "block_order": [
+        "slide_edNgiq",
+        "slide_UbzG6z",
+        "slide_NhJRMp"
+      ],
+      "name": "Pwr slider hero",
+      "settings": {
+        "desktop_height": "tall",
+        "mobile_height": "standard",
+        "autoplay": true,
+        "autoplay_speed": 6,
+        "transition_speed": 600
+      }
     }
   },
   "order": [
     "hero_RkimKJ",
     "pwr_hero_wQk4Fx",
     "pwr_showcase_a4hPpK",
-    "product_list_X8Q7bi"
+    "product_list_X8Q7bi",
+    "pwr_sld_hero_nYCzdH"
   ]
 }
