@@ -1,5 +1,5 @@
 /*
-CUSTOM FILE [PR-006] — PawRoutine homepage hero slideshow behavior | See docs/CUSTOM_CHANGES.md#PR-006
+CUSTOM FILE [PR-005] — PawRoutine homepage hero slideshow behavior | See docs/CUSTOM_CHANGES.md#PR-005
 */
 
 (() => {

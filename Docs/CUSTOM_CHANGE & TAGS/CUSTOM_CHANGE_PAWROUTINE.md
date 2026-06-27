@@ -43,6 +43,232 @@ Once a code change has been logged, keep the original entry. If the change is la
 
 ---
 ---
+### PawRoutine homepage hero slideshow (PR-005)
+
+Status: Applied
+Last updated: 27-06-2026
+
+Trigger:
+
+Created a custom homepage hero slideshow for PawRoutine to support multiple full-width promotional campaigns, with editable imagery, copy, CTAs, responsive layouts, and deliberate autoplay controls.
+
+Context:
+
+This is a custom homepage-only hero section named `Pwr slider hero`.
+It is a standalone replacement or alternative to a static homepage hero section, not a modification of the native theme slideshow.
+The section supports a maximum of five promotional slides.
+Each slide uses a full-bleed image with centred campaign copy and an optional CTA.
+The feature is isolated in dedicated PawRoutine files so the native theme’s slideshow, global CSS, shared JavaScript, Header, and other homepage sections remain unchanged.
+
+Scope:
+
+* `sections/pwr-sld-hero.liquid`
+* `assets/pwr-sld-hero.css`
+* `assets/pwr-sld-hero.js`
+
+Change summary:
+
+* Added a custom homepage-only Shopify section named `Pwr slider hero`.
+
+* Added a dedicated scoped stylesheet and JavaScript asset.
+
+* Added up to five editable slide blocks. Each slide includes:
+
+  * desktop image;
+  * optional separate mobile image;
+  * optional eyebrow text;
+  * heading;
+  * optional CTA label and link;
+  * light or dark text tone;
+  * selectable image-overlay strength.
+
+* Added responsive full-width hero layouts with:
+
+  * configurable desktop height;
+  * configurable mobile height;
+  * centred promotional content;
+  * full-cover campaign images;
+  * responsive heading, CTA, spacing, and control sizing.
+
+* Added configurable slideshow behaviour:
+
+  * optional autoplay;
+  * configurable autoplay delay from 6 to 12 seconds;
+  * configurable fade duration from 400 to 1,000 milliseconds;
+  * autoplay enabled by default with a 9-second delay and 700-millisecond fade transition.
+
+* Added slideshow controls when more than one slide exists:
+
+  * previous-slide button;
+  * next-slide button;
+  * pause/play button when autoplay is enabled.
+
+* Implemented the required interaction rule:
+
+  * when autoplay is enabled and the page loads, the slideshow begins switching automatically;
+  * the pause/play button initially represents the active autoplay state and displays the pause icon;
+  * clicking pause stops automatic switching;
+  * clicking play resumes automatic switching;
+  * clicking either previous/next arrow stops automatic switching before moving to the requested slide;
+  * clicking the active slide’s image area stops automatic switching;
+  * after a manual arrow or image interaction, autoplay remains stopped until the page reloads or the visitor deliberately presses the play button.
+
+* Added performance handling:
+
+  * the first slide image loads eagerly with high fetch priority;
+  * later slide images load lazily;
+  * the next slide image is prepared before it becomes active.
+
+* Added accessibility handling:
+
+  * carousel region and slide labels;
+  * screen-reader-only slideshow status updates after manual next/previous navigation;
+  * inactive slides are hidden from assistive technology and removed from keyboard navigation;
+  * accessible button labels for pause/play, previous, and next controls;
+  * keyboard-visible focus states;
+  * reduced-motion support that disables transitions and keeps autoplay stopped for visitors who prefer reduced motion.
+
+* Added Shopify Theme Editor support:
+
+  * selecting a slide block in Theme Editor displays that slide;
+  * the section displays an editor-facing message when no slide blocks have been added;
+  * a preset creates two starter slide blocks.
+
+Reasoning:
+
+* A dedicated custom section provides the intended promotional slideshow behaviour without editing or depending on the native theme slideshow structure.
+* The feature keeps PawRoutine-specific visual styling and interaction logic contained in three files, making it easier to maintain, test, remove, or adapt later.
+* The explicit manual-interaction pause rule avoids unwanted slide changes after a visitor has used the controls or clicked a campaign image.
+
+Important implementation details:
+
+* `pwr-sld-hero.liquid` loads both assets through:
+
+  ```liquid
+  {{ 'pwr-sld-hero.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'pwr-sld-hero.js' | asset_url }}" defer="defer"></script>
+  ```
+
+* Both assets must remain in the `assets` directory and retain the same filenames unless the Liquid references are updated.
+
+* The section is restricted to the homepage through its schema configuration:
+
+  ```json
+  "enabled_on": {
+    "templates": ["index"]
+  }
+  ```
+
+* Homepage placement is managed through Shopify Theme Editor. Do not manually edit `templates/index.json` to add, remove, or reorder the section.
+
+* The section uses the custom `<pwr-sld-hero>` web component registered in `pwr-sld-hero.js`.
+
+* Keep the Liquid markup, CSS selectors, and JavaScript `data-pwr-sld-*` attributes aligned. Renaming or removing these attributes can break slide switching, control behaviour, autoplay, accessibility states, or Theme Editor block selection.
+
+* A desktop image is the primary image for each slide. When no separate mobile image is chosen, the desktop image is reused on mobile.
+
+* A slide with no selected image displays a Shopify placeholder in Theme Editor or storefront output.
+
+* The pause/play control appears only when autoplay is enabled and the section contains more than one slide. Previous and next controls appear whenever the section contains more than one slide.
+
+* Autoplay temporarily stops while the browser tab is hidden and resumes when the tab becomes visible again, unless the visitor has manually paused the slideshow or reduced-motion preferences apply.
+
+Dependencies / assumptions:
+
+* The section depends on current theme styling variables and conventions, including:
+
+  * `--page-margin`;
+  * `--header-group-height`;
+  * theme heading and paragraph typography variables;
+  * `--color-background`;
+  * `--color-foreground`;
+  * the native `button` class and its button custom properties.
+
+* The section depends on browser support for:
+
+  * custom elements;
+  * `matchMedia`;
+  * the `inert` attribute;
+  * JavaScript event listeners.
+
+* The section assumes campaign images are composed to work with `object-fit: cover` and centred overlay text.
+
+* Slides with bright, busy, or poorly cropped imagery may need a stronger overlay or a separate mobile image to preserve copy readability.
+
+Risks / update sensitivity:
+
+* If the theme changes its button styles, typography variables, page margins, colour variables, or header-height variable, the section should be visually rechecked.
+
+* If any `pwr-sld-hero` class names or `data-pwr-sld-*` attributes are changed, the slideshow JavaScript may stop working correctly.
+
+* If the custom element name `pwr-sld-hero` is renamed or registered differently, the component may fail to initialise.
+
+* The manual-pause behaviour is intentional. Do not alter `pauseForManualInteraction()` without retesting the requirement that arrow and image interactions stop autoplay until reload or an explicit play action.
+
+* Test the hero with real campaign imagery on desktop and mobile. Full-bleed images may crop differently across screen sizes.
+
+* Long headings, missing images, incomplete CTA settings, and five-slide configurations should be tested individually.
+
+* Recheck the section after theme updates, JavaScript refactors, accessibility updates, or changes to the native button and typography systems.
+
+Rollback / removal:
+
+* Remove the `Pwr slider hero` instance through Shopify Theme Editor first.
+
+* Confirm it is no longer present on the homepage.
+
+* Remove the following files only after confirming they are not referenced elsewhere:
+
+  * `sections/pwr-sld-hero.liquid`
+  * `assets/pwr-sld-hero.css`
+  * `assets/pwr-sld-hero.js`
+
+* Do not remove or modify native slideshow files, global CSS, shared JavaScript, Header, or other homepage sections as part of removing this feature.
+
+Verification checklist:
+
+* Confirm `Pwr slider hero` appears in Homepage → Add section.
+
+* Confirm the section can be positioned and reordered through Shopify Theme Editor.
+
+* Confirm one to five slide blocks can be added and configured.
+
+* Confirm desktop and mobile images load correctly, including desktop-image fallback when no mobile image is selected.
+
+* Confirm the first slide is visible on page load.
+
+* Confirm autoplay begins automatically when enabled and at least two slides exist.
+
+* Confirm the pause/play button initially displays the pause state while autoplay is active.
+
+* Confirm pressing pause stops automatic switching and changes the control to the play state.
+
+* Confirm pressing play resumes automatic switching.
+
+* Confirm previous and next controls move to the correct slides.
+
+* Confirm clicking previous, next, or the active slide image stops autoplay.
+
+* Confirm autoplay remains stopped after a manual interaction until the page reloads or the play button is pressed.
+
+* Confirm inactive slides cannot receive keyboard focus or be read as active content by assistive technology.
+
+* Confirm reduced-motion preference disables transitions and autoplay.
+
+* Confirm the section has no horizontal overflow on desktop or mobile.
+
+* Confirm the native Header, marquee, split hero, product showcase, collection sections, product pages, cart, and global theme styling remain unchanged.
+
+* Confirm `shopify theme check` passes before future pushes.
+
+Notes:
+
+* Do not create separate code-log entries for ordinary campaign text, selected images, slide ordering, height settings, overlay choices, CTA links, or autoplay-delay changes made through Shopify Theme Editor.
+
+* Treat the Liquid section, CSS asset, and JavaScript asset as one feature.
+
+* Add a status update rather than replacing this entry if the slideshow is materially redesigned, removed, or changed after a future theme update.
+
 
 ### PawRoutine homepage product showcase (PR-004)
 

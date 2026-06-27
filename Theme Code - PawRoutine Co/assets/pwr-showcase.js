@@ -1,4 +1,4 @@
-/* CUSTOM FILE [PR-005] — PawRoutine homepage product showcase */
+/* CUSTOM FILE [PR-004] — PawRoutine homepage product showcase behavior | See docs/CUSTOM_CHANGE_PAWROUTINE.md#PR-004 */
 
 (() => {
   const ROOT = '[data-pwr-showcase]';
