@@ -152,7 +152,7 @@
       "type": "pwr-showcase",
       "name": "Pwr product showcase",
       "settings": {
-        "product": "calmbite-evening-treats",
+        "product": "daily-dental-chews",
         "color_scheme": "",
         "accent_color": "#1f4a3f",
         "eyebrow_label": "Daily care",
@@ -519,11 +519,11 @@
       ],
       "name": "Pwr slider hero",
       "settings": {
-        "desktop_height": "tall",
+        "desktop_height": "viewport",
         "mobile_height": "standard",
         "autoplay": true,
-        "autoplay_speed": 6,
-        "transition_speed": 600
+        "autoplay_speed": 9,
+        "transition_speed": 1000
       }
     }
   },

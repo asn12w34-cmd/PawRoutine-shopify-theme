@@ -58,12 +58,30 @@
 
     function select(index, behavior = 'smooth') {
       const slide = slides[index];
-      if (!slide) return;
+  if (!slide) return;
 
-      slide.scrollIntoView({ behavior, block: 'nearest', inline: 'center' });
-      updateControls(index);
-    }
+  /*
+   * Scroll only the gallery track.
+   * Element.scrollIntoView() also scrolls the document when this section is
+   * below the fold, which was pulling the whole homepage to this showcase
+   * during every load.
+   */
+  const slideRect = slide.getBoundingClientRect();
+  const trackRect = track.getBoundingClientRect();
+  const maxScrollLeft = Math.max(0, track.scrollWidth - track.clientWidth);
 
+  const targetLeft =
+    track.scrollLeft +
+    (slideRect.left - trackRect.left) -
+    (track.clientWidth - slide.clientWidth) / 2;
+
+  track.scrollTo({
+    left: Math.max(0, Math.min(targetLeft, maxScrollLeft)),
+    behavior,
+  });
+
+  updateControls(index);
+}
     function selectByMediaId(mediaId, behavior = 'smooth') {
       if (!mediaId) return;
       const index = slides.findIndex((slide) => String(slide.dataset.pwrMediaId) === String(mediaId));
@@ -224,7 +242,7 @@
       else quantityInput.removeAttribute('max');
     }
 
-    function updateUI() {
+    function updateUI(mediaBehavior = 'smooth') {
       const options = selectedOptions();
       const variant = getVariant(options);
       updateOptionStates(options);
@@ -266,10 +284,12 @@
       if (addContainer) addContainer.dataset.productVariantMedia = variant.mediaUrl || '';
 
       updateQuantityRules(variant);
-      gallery.selectByMediaId(variant.mediaId, 'smooth');
+      gallery.selectByMediaId(variant.mediaId, mediaBehavior);;
     }
 
-    optionInputs.forEach((input) => input.addEventListener('change', updateUI));
+    optionInputs.forEach((input) =>
+      input.addEventListener('change', () => updateUI('smooth'))
+    );
 
     function alterQuantity(direction) {
       if (!quantityInput) return;
@@ -289,7 +309,8 @@
       quantityInput.value = String(clamp(Number(quantityInput.value), min, max));
     });
 
-    updateUI();
+    // Keep the page at its natural load position; only the gallery may move.
+  updateUI('auto');
   }
 
   function init(root) {
