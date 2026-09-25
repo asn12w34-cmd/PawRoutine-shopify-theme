@@ -167,6 +167,10 @@
               },
               "blocks": {}
             },
+            "recharge_subscriptions_subscription_widget_v2_3CtEFG": {
+              "type": "shopify://apps/recharge-subscriptions/blocks/subscription-widget-v2/371eed76-0b44-4869-9813-730372ea378e",
+              "settings": {}
+            },
             "buy_buttons_eYQEYi": {
               "type": "buy-buttons",
               "settings": {
@@ -209,6 +213,7 @@
             "price_a7krng",
             "text_gXMUag",
             "variant_picker_R3rGDr",
+            "recharge_subscriptions_subscription_widget_v2_3CtEFG",
             "buy_buttons_eYQEYi"
           ]
         }
