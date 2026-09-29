@@ -113,7 +113,8 @@
         class="sticky-add-to-cart__price"
         data-testid="sticky-price-display"
       >
-        {% render 'price', product_resource: product, show_sale_price_first: true %}
+        {% # CUSTOM [PWR-001] — Sticky bar always represents the current variant %}
+        {% render 'price', product_resource: product, show_sale_price_first: true, show_from_price: false %}
       </div>
 
       <button

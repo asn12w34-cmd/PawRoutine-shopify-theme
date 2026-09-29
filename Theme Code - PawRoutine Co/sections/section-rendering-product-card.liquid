@@ -52,7 +52,8 @@
     {% render 'variant-swatches', product_resource: product, has_option_selected: true %}
 
     <product-price>
-      {% render 'price', product_resource: product, show_unit_price: true %}
+      {% # CUSTOM [PWR-001] — Swatch response represents a specifically selected variant %}
+      {% render 'price', product_resource: product, show_unit_price: true, show_from_price: false %}
     </product-price>
 
     <product-sku-component

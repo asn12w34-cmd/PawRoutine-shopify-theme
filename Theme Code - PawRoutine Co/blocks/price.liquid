@@ -53,6 +53,21 @@
     show_sale_price_first: block_settings.show_sale_price_first
   %}
 
+  {% comment %}
+    CUSTOM START [PWR-001] — Provide exact variant HTML for dynamic price updates
+  {% endcomment %}
+  {% if product_resource.price_varies and product_resource.metafields.custom.disable_from_price.value != true %}
+    <template data-exact-variant-price>
+      {% render 'price',
+        show_unit_price: true,
+        product_resource: product_resource,
+        show_sale_price_first: block_settings.show_sale_price_first,
+        show_from_price: false
+      %}
+    </template>
+  {% endif %}
+  {% comment %}CUSTOM END [PWR-001]{% endcomment %}
+
   {% if block_settings.show_tax_info %}
     <div class="tax-note">
       {%- if cart.duties_included and cart.taxes_included -%}

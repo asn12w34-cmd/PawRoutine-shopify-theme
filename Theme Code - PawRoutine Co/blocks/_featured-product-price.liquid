@@ -36,15 +36,32 @@
   "
   {{ block.shopify_attributes }}
 >
-  {% if product.price_varies and has_swatches_only == false and price_min != blank %}
-    <span class="price">{{ display_price }}</span>
+  {% comment %}
+    CUSTOM START [PWR-001] — Apply From pricing and preserve exact variant updates
+  {% endcomment %}
+  {% if product.price_varies and has_swatches_only == false and price_min != blank and product.selected_variant == blank and product.metafields.custom.disable_from_price.value != true %}
+    <div ref="priceContainer">
+      <span class="price">{{ display_price }}</span>
+    </div>
   {% else %}
     {% render 'price',
       show_unit_price: true,
       show_sale_price_first: block_settings.show_sale_price_first,
-      product_resource: product
+      product_resource: product,
+      show_from_price: false
     %}
   {% endif %}
+  {% if product.price_varies and has_swatches_only == false and product.metafields.custom.disable_from_price.value != true %}
+    <template data-exact-variant-price>
+      {% render 'price',
+        show_unit_price: true,
+        show_sale_price_first: block_settings.show_sale_price_first,
+        product_resource: product,
+        show_from_price: false
+      %}
+    </template>
+  {% endif %}
+  {% comment %}CUSTOM END [PWR-001]{% endcomment %}
 </product-price>
 
 {% schema %}

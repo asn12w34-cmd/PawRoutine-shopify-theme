@@ -50,7 +50,14 @@ class ProductPrice extends Component {
     if (!newProductPrice) return;
 
     // Update price container
-    const newPrice = newProductPrice.querySelector('[ref="priceContainer"]');
+    /* CUSTOM START [PWR-001] — Use exact variant HTML after a variant selection */
+    // A variant update represents the chosen variant even when the section request
+    // uses option_values and Liquid has no product.selected_variant URL parameter.
+    const exactVariantPrice = newProductPrice.querySelector('template[data-exact-variant-price]');
+    const newPrice =
+      (event.detail.resource && exactVariantPrice?.content.querySelector('[ref="priceContainer"]')) ||
+      newProductPrice.querySelector('[ref="priceContainer"]');
+    /* CUSTOM END [PWR-001] */
     if (newPrice && priceContainer) {
       priceContainer.replaceWith(newPrice);
     }

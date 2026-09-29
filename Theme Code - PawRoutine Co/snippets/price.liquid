@@ -5,11 +5,17 @@
   @param {product} product_resource - The product to render
   @param {boolean} [show_unit_price] - Whether to show the unit price
   @param {boolean} [show_sale_price_first] - Whether to show the sale price first
+  @param {boolean} [show_from_price] - Whether this price represents the product generally; defaults to true
 {%- enddoc -%}
 
 {%- liquid
   assign show_unit_price = show_unit_price | default: false
   assign show_sale_price_first = show_sale_price_first | default: false
+  # CUSTOM START [PWR-001] — Allow callers to request an exact variant price
+  if show_from_price == nil
+    assign show_from_price = true
+  endif
+  # CUSTOM END [PWR-001]
   assign selected_variant = product_resource.selected_or_first_available_variant
   assign price = selected_variant.price
   assign compare_at_price = selected_variant.compare_at_price
@@ -48,6 +54,17 @@
     endif
   endif
 
+  # CUSTOM START [PWR-001] — Decide when a general product price should use From pricing
+  # A selected variant (including one surfaced by search or collection filters) has an exact price.
+  # Volume pricing has its own price range, so keep that display intact.
+  assign show_from = false
+  if show_from_price and product_resource.price_varies and product_resource.selected_variant == blank and has_volume_pricing != true
+    unless product_resource.metafields.custom.disable_from_price.value == true
+      assign show_from = true
+    endunless
+  endif
+  # CUSTOM END [PWR-001]
+
   # Determine if currency code should be shown
   assign use_currency = false
   if product.handle == product_resource.handle
@@ -70,10 +87,24 @@
     assign price_min = price_min | money
     assign price_max = price_max | money
   endif
+
+  # CUSTOM START [PWR-001] — Format the minimum price through Horizon's translated label
+  if show_from
+    if use_currency
+      assign from_price_value = product_resource.price_min | money_with_currency
+    else
+      assign from_price_value = product_resource.price_min | money
+    endif
+    assign from_price = 'content.price_from' | t: price: from_price_value
+  endif
+  # CUSTOM END [PWR-001]
 -%}
 
 <div ref="priceContainer">
-  {% if has_volume_pricing %}
+  {% # CUSTOM [PWR-001] — Render From pricing before Horizon's existing price branches %}
+  {% if show_from %}
+    <span class="price">{{ from_price }}</span>
+  {% elsif has_volume_pricing %}
     {% comment %} Volume pricing display {% endcomment %}
     {% if show_compare_price %}
       <span class="price-item__group">
